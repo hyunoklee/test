@@ -1,0 +1,64 @@
+1.  해볼것 _ 강제로  풀어서  publish 하기 
+2. 최상단 subscribe  하는 부분 생성 . 
+   Demo 로 돌리지 말고 아래 명령어로 돌리기 ( 손대지 말고 original 변경, darknet ros 도 )
+    
+   roslaunch turtlebot3_slam_3d turtlebot3_slam_3d.launch use_zed:=false
+   
+   ////////////////////////////////////////////////////////////////////////////////// 
+
+   roslaunch turtlebot3_slam_3d turtlebot3_d435_bringup.launch
+   roslaunch turtlebot3_slam_3d rtabmap.launch localization:=true use_zed:=false
+
+   애러날경우 -> 
+
+   하다가 안되면  기체 연결해서 돌리기 
+
+////////////////////////////////////////////////////////////////////////////////
+
+  <!-- POINT CLOUD -->
+  <node if="$(arg generate_point_cloud)"
+	pkg="nodelet" type="nodelet" name="point_cloud_generator"
+  	args="load depth_image_proc/point_cloud_xyzrgb $(arg MANAGER)">
+    <remap from="rgb/camera_info" to="$(arg input_camera_info)"/>
+    <remap from="rgb/image_rect_color" to="$(arg input_image)"/>
+    <remap from="depth_registered/image_rect" to="$(arg input_depth)"/>
+    <remap from="depth_registered/points" to="$(arg point_cloud_topic)"/>   --> publish 
+  </node>
+   
+  2D  와 3 D 화면을 합쳐서  XYZRGB point cloud 를 보내버림. 
+
+  <!-- COORDINATES -->
+  <node pkg="nodelet" type="nodelet" name="label_mask"
+  	args="load jsk_pcl_utils/LabelToClusterPointIndices $(arg MANAGER)">
+    <remap from="~input" to="darknet_ros/label_image"/>
+    <remap from="~output" to="darknet_ros/cluster_points"/>    --> publish 
+  </node>
+
+  먼지 모르겠은  다크넷 로스에서 이미지 찾는 파일을 보내면 표시해 주는것 같음.  
+  sensor_msgs/PointCloud2
+
+
+
+
+http://mjune.tistory.com/186   -->  cloud point   찾는 방법 
+
+
+  <node pkg="nodelet" type="nodelet" name="cluster_decomposer"
+  	args="load jsk_pcl/ClusterPointIndicesDecomposer $(arg MANAGER)">
+    <remap from="~input" to="$(arg point_cloud_topic)"/>
+    <remap from="~target" to="darknet_ros/cluster_points"/>
+    <rosparam>
+      approximate_sync: true
+
+      <!-- TARGET FRAME -->
+      align_boxes: true
+      align_boxes_with_plane: false
+      target_frame_id: map
+
+      <!-- PUBLISH TF -->
+      publish_tf: true                                                                                                                                
+      tf_prefix: yolo_
+    </rosparam>
+  </node>
+
+  아래 두래를 붙여서 실제 좌표를 만듬
