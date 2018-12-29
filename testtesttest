@@ -29,3 +29,6 @@ sudo apt-get install libncurses5-dev:i386
 sudo apt-get install build-essential
 
 https://github.com/eProsima/Micro-XRCE-DDS-Agent/issues/3
+
+sudo dpkg-reconfigure wireshark-common
+sudo gpasswd -a $USER wireshark
