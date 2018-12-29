@@ -1,0 +1,31 @@
+sudo usermod -a -G dialout $USER
+#define SSID       "G62255"
+#define SSID_PW    "12345678"
+#define AGENT_IP   "192.168.43.15"
+https://github.com/ROBOTIS-GIT/ros2arduino
+source /opt/ros/crystal/setup.bash
+source ~/ros2_ws/install/local_setup.bash
+MicroXRCEAgent udp 2018
+ros2 topic echo /arduino_chatter std_msgs/String
+
+
+1.0.1-rc2
+
+$ git clone https://github.com/eProsima/micro-XRCE-DDS-agent.git
+$ cd micro-XRCE-DDS-agent
+$ mkdir build && cd build
+$ cmake -DTHIRDPARTY=ON ..
+$ make
+$ sudo make install
+sudo ldconfig /usr/local/lib/
+
+
+wireshark
+
+https://github.com/espressif/arduino-esp32/releases/download/1.0.1-rc2/package_esp32_dev_index.json
+https://raw.githubusercontent.com/ROBOTIS-GIT/OpenCR/master/arduino/opencr_release/package_opencr_index.json
+
+sudo apt-get install libncurses5-dev:i386
+sudo apt-get install build-essential
+
+https://github.com/eProsima/Micro-XRCE-DDS-Agent/issues/3
