@@ -32,3 +32,5 @@ https://github.com/eProsima/Micro-XRCE-DDS-Agent/issues/3
 
 sudo dpkg-reconfigure wireshark-common
 sudo gpasswd -a $USER wireshark
+
+https://www.tinkercad.com/things/e5HntHkKFQv
