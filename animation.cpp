@@ -71,7 +71,7 @@ bool Animation::begin(void)
 
 void Animation::drawLcdImage(uint16_t index)
 {
-  img_tbl_t *p_img = (img_tbl_t *)&ani_img_tbl[index];
+  ani_img_tbl_t *p_img = (ani_img_tbl_t *)&ani_img_tbl[index];
 
   if (index >= IMG_EDUBOT_MAX)
   {
