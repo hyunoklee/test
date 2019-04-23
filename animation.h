@@ -72,10 +72,13 @@ class Animation
     ~Animation();
 
     bool begin(void);
-    bool isInit(void);
-    void playAnimation(void);
-    void setAnimation(uint8_t *p_buff, uint32_t length, bool wait);
-    
+    bool isInit(void);    
+
+    void setAnimation(uint8_t image1, uint32_t time1, uint8_t image2, uint32_t time2);
+    void playAnimationByTimer(void);
+    void playAnimationByThread(void);
+    void stopAnimation(void);
+  
   private:
   	void drawLcdImage(uint16_t index) ;
     
