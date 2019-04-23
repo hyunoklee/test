@@ -38,10 +38,10 @@ typedef struct
   uint16_t height;
   uint8_t *p_data;
   uint8_t  color;
-} aniimg_tbl_t;
+} ani_img_tbl_t;
 
 
-static const img_tbl_t ani_img_tbl[IMG_EDUBOT_MAX] = 
+static const ani_img_tbl_t ani_img_tbl[IMG_EDUBOT_MAX] = 
 {
   {(128-48)/2, (64-48)/2, 48, 48, (uint8_t *)&edubot_logo[0*48*48/8], 1},
   {(128-48)/2, (64-48)/2, 48, 48, (uint8_t *)&edubot_logo[1*48*48/8], 1},
