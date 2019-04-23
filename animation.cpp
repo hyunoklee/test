@@ -5,6 +5,7 @@
 typedef struct
 {
   bool is_init;  
+  bool drawbythread;  
 } animation_node_t;
 
 
@@ -17,10 +18,12 @@ volatile TaskHandle_t _play_task_handle = NULL;
 void animationThread(void *arg)
 {
   Animation *p_animation = (Animation *)arg;
-
+  Serial.print("animationThread"); 
   while(1)
   {
-
+    if(animation_play.drawbythread){
+	    
+    }
   }
 }
 
@@ -28,6 +31,7 @@ void animationThread(void *arg)
 Animation::Animation(void)
 {
   animation_play.is_init = false;
+  animation_play.drawbythread = true;
 }
 
 Animation::~Animation()
@@ -67,6 +71,24 @@ bool Animation::begin(void)
   
 
   return animation_play.is_init;
+}
+
+void Animation::setAnimation(uint8_t image1, uint32_t time1, uint8_t image2, uint32_t time2)
+{
+}
+
+void Animation::playAnimationByTimer(void)
+{
+   animation_play.drawbythread = false ;	
+}
+
+void Animation::playAnimationByThread(void)
+{
+   animation_play.drawbythread = true ;
+}
+
+void Animation::stopAnimation(void)
+{
 }
 
 void Animation::drawLcdImage(uint16_t index)
