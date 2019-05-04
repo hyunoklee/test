@@ -18,6 +18,9 @@
 
 #include "open_manipulator_apple/open_manipulator_apple.h"
 
+int test_count = 0;
+std::vector<int> t_data;
+
 OpenManipulatorApple::OpenManipulatorApple()
     :node_handle_(""),
      priv_node_handle_("~"),
@@ -39,6 +42,15 @@ OpenManipulatorApple::OpenManipulatorApple()
   initServiceClient();
   initSubscribe();
   initPublish();
+  t_data.push_back(100);
+  t_data.push_back(200);
+  t_data.push_back(300);
+  t_data.push_back(400);
+  t_data.push_back(500);
+  t_data.push_back(600);
+  t_data.push_back(700);
+  t_data.push_back(800);
+  t_data.push_back(900);
   
   on_btn_home_pose_clicked();
 }
@@ -193,8 +205,6 @@ void OpenManipulatorApple::arPoseMarkerCallback(const ar_track_alvar_msgs::Alvar
   ar_marker_pose = temp_buffer;
 }
 
-std::vector<YoloObject> avg_pose;
-int avg_count = 0;
 
 void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
 {  
@@ -241,11 +251,12 @@ void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::Pos
   } 
 
   temp_buffer.push_back(temp);
-  avg_pose.push_back(temp);
+/*  avg_pose.push_back(temp);
   avg_count++;
   if( avg_count > 20 ){
    
   }
+*/
   
   yolo_pose = temp_buffer;
   //ROS_INFO("SAVE POSE OF centroidPoseArray ");
@@ -254,6 +265,7 @@ void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::Pos
 void OpenManipulatorApple::publishCallback(const ros::TimerEvent&)
 {
   //printText();
+  test();
   objectPublisher() ;
   if(kbhit()) setModeState(std::getchar());
 
@@ -433,6 +445,19 @@ void OpenManipulatorApple::demoSequence()
     }
     break;
   } // end of switch-case
+}
+
+void OpenManipulatorApple::test(void)
+{ 
+  
+  test_count++;
+  for(int i = 0 ; i < t_data.size() ; i++){
+     printf("%d, ", t_data.at(i) );
+  }
+  t_data.push_back(200);
+  t_data.erase(t_data.begin());
+  printf("\n");
+  //t_data
 }
 
 
