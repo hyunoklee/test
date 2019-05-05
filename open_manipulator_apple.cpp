@@ -1,4 +1,4 @@
-﻿/*******************************************************************************
+/*******************************************************************************
 * Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-#include "open_manipulator_apple/open_manipulator_apple.h"
+#include "open_manipulator_pick_and_place/open_manipulator_pick_and_place.h"
 
 int test_count = 0;
 std::vector<int> t_data;
@@ -51,6 +51,7 @@ OpenManipulatorApple::OpenManipulatorApple()
   t_data.push_back(700);
   t_data.push_back(800);
   t_data.push_back(900);
+  avg_size = 20 ;
   
   on_btn_home_pose_clicked();
 }
@@ -205,12 +206,6 @@ void OpenManipulatorApple::arPoseMarkerCallback(const ar_track_alvar_msgs::Alvar
   ar_marker_pose = temp_buffer;
 }
 
-
-void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
-{  
-  std::vector<YoloObject> temp_buffer;
-
-  geometry_msgs::Pose centroid_pose[10];
   //gazebo parameter
   /*double x_offset = 0.07;
   double y_offset = -0.015;
@@ -218,11 +213,20 @@ void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::Pos
   double z_min = 0.0;
   */
 
+void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
+{  
+  std::vector<YoloObject> temp_buffer;
+
+  geometry_msgs::Pose centroid_pose[10];
+
   //real opm  parameter
   double x_offset = 0.07 - 0.09 ;
   double y_offset = -0.015 - 0.031 ;
   double z_offset = -0.07 ;
   double z_min = 0.0352;
+  double x_avg_tmp = 0;
+  double y_avg_tmp = 0;
+  double z_avg_tmp = 0;
   
   YoloObject temp;	    
   for(int i = 0 ; i < msg->poses.size() ; i++)
@@ -232,12 +236,8 @@ void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::Pos
     {
       continue;
     }
-    
-    //temp.id = msg->markers.at(i).id;
+
     temp.id = i;
-    //temp.position[0] = msg->markers.at(i).pose.pose.position.x;
-    //temp.position[1] = msg->markers.at(i).pose.pose.position.y;
-    //temp.position[2] = msg->markers.at(i).pose.pose.position.z;
     temp.position[0] = centroid_pose[i].position.z + x_offset;
     temp.position[1] = -(centroid_pose[i].position.x + y_offset);
     temp.position[2] = -(centroid_pose[i].position.y + z_offset);
@@ -249,23 +249,49 @@ void OpenManipulatorApple::centroidPoseArrayMsgCallback(const geometry_msgs::Pos
         printf("...........z limit happen");
     }    
   } 
+  
+  avg_pose.push_back(temp);
+
+  while( avg_pose.size() > avg_size ){
+    avg_pose.erase(avg_pose.begin());
+  }
+  
+  for(int i=0 ; i < avg_pose.size(); i++){
+    x_avg_tmp += avg_pose.at(i).position[0] ;
+    y_avg_tmp += avg_pose.at(i).position[0] ;
+    z_avg_tmp += avg_pose.at(i).position[0] ;
+  }
+  x_avg_tmp = x_avg_tmp/avg_pose.size() ;
+  y_avg_tmp = x_avg_tmp/avg_pose.size() ;
+  z_avg_tmp = x_avg_tmp/avg_pose.size() ;
+  
+  temp.position[0] = x_avg_tmp;
+  temp.position[1] = y_avg_tmp;
+  temp.position[2] = z_avg_tmp;
 
   temp_buffer.push_back(temp);
-/*  avg_pose.push_back(temp);
-  avg_count++;
-  if( avg_count > 20 ){
-   
-  }
-*/
-  
   yolo_pose = temp_buffer;
   //ROS_INFO("SAVE POSE OF centroidPoseArray ");
 }
 
+void OpenManipulatorApple::test(void)
+{ 
+  
+  test_count++;
+  for(int i = 0 ; i < t_data.size() ; i++){
+     printf("%d, ", t_data.at(i) );
+  }
+  t_data.push_back(200);
+  t_data.erase(t_data.begin());
+  printf("\n");
+  //t_data
+}
+
+
 void OpenManipulatorApple::publishCallback(const ros::TimerEvent&)
 {
   //printText();
-  test();
+  //test();
   objectPublisher() ;
   if(kbhit()) setModeState(std::getchar());
 
@@ -300,8 +326,13 @@ void OpenManipulatorApple::setModeState(char ch)
     mode_state_ = HOME_POSE;
   else if(ch == '2')
   {
-    mode_state_ = DEMO_START;
-    demo_count_ = 0;
+    if( avg_pose.size() >= avg_size )
+    {
+       mode_state_ = DEMO_START;
+       demo_count_ = 0;
+    }else{
+       ROS_INFO("wait average");      
+    }
   }
   else if(ch == '3')
     mode_state_ = DEMO_STOP;
@@ -445,19 +476,6 @@ void OpenManipulatorApple::demoSequence()
     }
     break;
   } // end of switch-case
-}
-
-void OpenManipulatorApple::test(void)
-{ 
-  
-  test_count++;
-  for(int i = 0 ; i < t_data.size() ; i++){
-     printf("%d, ", t_data.at(i) );
-  }
-  t_data.push_back(200);
-  t_data.erase(t_data.begin());
-  printf("\n");
-  //t_data
 }
 
 
