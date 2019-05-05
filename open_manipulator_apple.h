@@ -1,4 +1,4 @@
-﻿#ifndef OPEN_MANIPULATOR_APPLE_H
+#ifndef OPEN_MANIPULATOR_APPLE_H
 #define OPEN_MANIPULATOR_APPLE_H
 
 #include <ros/ros.h>
@@ -58,11 +58,13 @@ class OpenManipulatorApple
   bool open_manipulator_is_moving_;
   std::vector<ArMarker> ar_marker_pose;
   std::vector<YoloObject> yolo_pose;
+  std::vector<YoloObject> avg_pose;
   std::string target_object;
 
   uint8_t mode_state_;
   uint8_t demo_count_;
   uint8_t pick_ar_id_;
+  uint8_t avg_size;
 
  public:
   OpenManipulatorApple();
@@ -90,6 +92,7 @@ class OpenManipulatorApple
 
   void printText();
   bool kbhit();
+  void test();
 
   void on_btn_home_pose_clicked(void);
 };
